@@ -9,7 +9,7 @@ def getJancode() -> dict:
     with open('./{}'.format(os.environ['JANCODE']), 'r') as f:
         reader = csv.DictReader(f)
         for row in reader:
-            EANs = row['EAN'].split(',')
+            EANs = row['Product Codes: EAN'].split(',')
             jancode[row['ASIN']] = EANs[0]
 
     return jancode
@@ -52,3 +52,4 @@ def main():
 
 if __name__ == '__main__':
     main()
+    
