@@ -1,13 +1,16 @@
 import csv
 import pickle
 import os
-from dotenv import load_dotenv
+from dotenv import load_dotenv   # type: ignore
 
 
 def getJancode() -> dict:
     jancode = {}
-    with open('./.csv', 'r') as f:
+    with open('./{}'.format(os.environ['JANCODE']), 'r') as f:
         reader = csv.DictReader(f)
+        for row in reader:
+            EANs = row['EAN'].split(',')
+            jancode[row['ASIN']] = EANs[0]
 
     return jancode
 
@@ -15,7 +18,7 @@ def getJancode() -> dict:
 def getCodes(acc: str) -> dict:
     with open('./pickle/code_dict_{}.pickle'.format(acc), 'rb') as f:
         code_dict = pickle.load(f)
-    
+
     return code_dict
 
 
@@ -38,13 +41,14 @@ def ftpCSV():
 
 def main():
     load_dotenv()
-    jancode = getJancode()
+    # jancode = getJancode()
     accounts = os.environ['ACCOUNTS']
+    accounts = accounts.split(',')
+
     for acc in accounts:
         code = getCodes(acc)
         makeCSV(acc, code, jancode)
 
 
 if __name__ == '__main__':
-    
     main()
