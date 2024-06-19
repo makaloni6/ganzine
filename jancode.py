@@ -61,7 +61,6 @@ def main():
     accounts = os.environ['ACCOUNTS']
     accounts = accounts.split(',')
 
-
     for acc in accounts:
         code = getCodes(acc)
         makeCSV(acc, code, jancode)
