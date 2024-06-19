@@ -2,7 +2,8 @@ import csv
 import pickle
 import os
 from dotenv import load_dotenv   # type: ignore
-
+from ftplib import FTP
+import time
 
 def getJancode() -> dict:
     jancode = {}
@@ -22,7 +23,7 @@ def getCodes(acc: str) -> dict:
     return code_dict
 
 
-def makeCSV(acc: str, code: dict, jancode: dict):
+def makeCSV(acc: str, code: dict, jancode: dict) -> None:
 
     header = ['code', 'jancode']
     data = []
@@ -35,19 +36,35 @@ def makeCSV(acc: str, code: dict, jancode: dict):
         writer.writerows(data)
 
 
-def ftpCSV():
-    pass
+def login_server(acc) -> list:
+    PASS1 = os.environ['PASS1']
+    PASS2 = os.environ['PASS2']
 
+
+def ftpCSV(acc):
+    PASS, acc = login_server(acc)
+    csv_pass = './csv/'
+    try:
+        ftp = FTP(os.environ['FTP_ADDRESS'], acc, PASS)
+    except BaseException:
+        raise Exception('login error')
+    
+    files = os.listdir(csv_pass)
+    for filename in files:
+        with open(csv_pass + filename, "rb") as f:
+            ftp.storbinary("STOR /" + filename, f)
+        time.sleep(240)
 
 def main():
     load_dotenv()
-    # jancode = getJancode()
+    jancode = getJancode()
     accounts = os.environ['ACCOUNTS']
     accounts = accounts.split(',')
 
     for acc in accounts:
         code = getCodes(acc)
         makeCSV(acc, code, jancode)
+        ftpCSV(acc)
 
 
 if __name__ == '__main__':
