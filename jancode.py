@@ -40,6 +40,13 @@ def login_server(acc) -> list:
     PASS1 = os.environ['PASS1']
     PASS2 = os.environ['PASS2']
 
+    PASS = PASS1 if acc not in os.environ['ACC_LIST1'] else PASS2
+    if acc in os.environ['ACC_LIST2']:
+        acc = acc + "-store"
+    acc = "store-{}".format(acc)
+
+    return acc, PASS
+
 
 def ftpCSV(acc):
     PASS, acc = login_server(acc)
@@ -53,7 +60,7 @@ def ftpCSV(acc):
     for filename in files:
         with open(csv_pass + filename, "rb") as f:
             ftp.storbinary("STOR /" + filename, f)
-        time.sleep(240)
+        time.sleep(60)
 
 def main():
     load_dotenv()
@@ -65,7 +72,7 @@ def main():
         code = getCodes(acc)
         makeCSV(acc, code, jancode)
         ftpCSV(acc)
-        time.sleep(60)
+
 
 
 if __name__ == '__main__':
