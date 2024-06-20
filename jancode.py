@@ -65,6 +65,7 @@ def main():
         code = getCodes(acc)
         makeCSV(acc, code, jancode)
         ftpCSV(acc)
+        time.sleep(60)
 
 
 if __name__ == '__main__':
